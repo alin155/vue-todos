@@ -1,23 +1,31 @@
 <template>
-  <div class="page lists-show">
+  <div class="page lists-show" v-show="!todo.isDelete">
       <nav>
-          <div class="nav-group">
+          <div class="form list-edit-form" v-show="isUpdate">
+            <input type="text" v-model="todo.title" @keyup.enter="updateTitle" :disabled='todo.locked'>
+            <div class="nav-group right">
+              <a class="nav-item" @click="isUpdate = false">
+                <span class="icon-close"></span>
+              </a>
+            </div>
+          </div>
+          <div class="nav-group" @click="$store.dispatch('updateMenu')" v-show="!isUpdate">
               <a class="nav-item">
                   <span class="icon-list-unordered"></span>
               </a>
           </div>
-          <h1 class="title-page">
+          <h1 class="title-page" v-show="!isUpdate" @click="isUpdate = true">
               <span class="title-wrapper">{{todo.title}}</span>
-              <span class="count-list">{{todo.count}}</span>
+              <span class="count-list">{{todo.count || 0}}</span>
           </h1>
-          <div class="nav-group right">
+          <div class="nav-group right" v-show="!isUpdate">
               <div class="options-web">
-                  <a class="nav-item">
+                  <a class="nav-item" @click="onLock">
                       <span class="icon-lock" v-if="todo.locked"></span>
                       <span class="icon-unlock" v-else></span>
                   </a>
                   <a class="nav-item">
-                      <span class="icon-trash"></span>
+                      <span class="icon-trash" @click="onDelete"></span>
                   </a>
               </div>
           </div>
@@ -28,8 +36,8 @@
       </nav>
 
       <div class="content-scrollable list-items">
-          <div v-for="item in items" :key="item.id">
-            <item></item>
+          <div v-for="(item, index) in items" :key="index">
+            <item :item='item' :index='index' :id="todo.id" :init='init' :locked='todo.locked'></item>
           </div>
       </div>
   </div>
@@ -37,7 +45,7 @@
 
 <script>
 import item from './item'
-import { getTodo } from '../api/api'
+import { addRecord, getTodo, editTodo } from '../api/api'
 export default {
   components: {
     item
@@ -52,7 +60,8 @@ export default {
       items: [
         { checked: false, text: '新的一天', isDelete: false }
       ],
-      text: ''
+      text: '',
+      isUpdate: false
     }
   },
   watch: {
@@ -65,10 +74,15 @@ export default {
   },
   methods: {
     onAdd () {
-      this.items.push({
-        checked: false, text: this.text, isDelete: false
+      // this.items.push({
+      //   checked: false, text: this.text, isDelete: false
+      // })
+      const ID = this.$route.params.id
+      addRecord({ id: ID, text: this.text }).then(res => {
+        this.text = ''
+        this.init()
+        this.$store.dispatch('getTodo')
       })
-      this.text = ''
     },
 
     init () {
@@ -84,6 +98,30 @@ export default {
           isDelete: isDelete
         }
       })
+    },
+
+    updateTodo () {
+      let _this = this
+      editTodo({
+        todo: this.todo
+      }).then(data => {
+        _this.$store.dispatch('getTodo')
+      })
+    },
+
+    updateTitle () {
+      this.updateTodo()
+      this.isUpdate = false
+    },
+
+    onDelete () {
+      this.todo.isDelete = true
+      this.updateTodo()
+    },
+
+    onLock () {
+      this.todo.locked = !this.todo.locked
+      this.updateTodo()
     }
   }
 }

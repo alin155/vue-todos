@@ -8,7 +8,6 @@ export default {
     let mock = new MockAdapter(Axios)
     mock.onGet('/todo/list').reply(config => {
       let mockTodo = Todos.map(todo => {
-        console.log('\n 2===' + todo.record[1].text + '===2 \n')
         return {
           id: todo.id,
           title: todo.title,
@@ -37,7 +36,6 @@ export default {
       let todo = Todos.find(todo => {
         return id && todo.id === id
       })
-      console.log('\n1===' + todo.record[1].text + '===1 \n')
       todo.count = todo.record.filter((data) => {
         return data.checked === false
       }).length
@@ -86,6 +84,37 @@ export default {
         }, 200)
       })
     })
-  }
 
+    mock.onPost('/todo/editTodo').reply(config => {
+      let { todo } = JSON.parse(config.data)
+      Todos.some((t, index) => {
+        if (t.id === todo.id) {
+          t.title = todo.title
+          t.locked = todo.locked
+          t.isDelete = todo.isDelete
+          return true
+        }
+      })
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve([200])
+        }, 200)
+      })
+    })
+
+    mock.onPost('/todo/editRecord').reply(config => {
+      let { id, record, index } = JSON.parse(config.data)
+      Todos.some((t) => {
+        if (t.id === id) {
+          t.record[index] = record
+          return true
+        }
+      })
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve([200])
+        }, 200)
+      })
+    })
+  }
 }

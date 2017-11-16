@@ -19,7 +19,7 @@ npm run build --report
 ```
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
-
+``` bash
 ├── build              // 构建服务和webpack配置
 ├── config             // 项目不同环境的配置
 ├── dist               // 项目build目录
@@ -34,3 +34,4 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 │   ├── vuex *           // vuex状态管理器
 │   ├── router    // 路由配置器
 │   └── main.js        // Webpack 预编译入口
+```

@@ -15,3 +15,15 @@ export const getTodo = params => {
     params: params
   })
 }
+
+export const addRecord = params => {
+  return Axios.post('/todo/addRecord', params).then(res => res.data)
+}
+
+export const editTodo = params => {
+  return Axios.post('/todo/editTodo', params).then(res => res.data)
+}
+
+export const editRecord = params => {
+  return Axios.post('/todo/editRecord', params).then(res => res.data)
+}

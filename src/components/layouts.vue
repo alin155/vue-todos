@@ -1,10 +1,12 @@
 <template>
- <section class='container'>
+ <section class='container' :class="{ 'menu-open': menuOpen }">
      <section class="menu">
          <menus></menus>
      </section>
+     <div class="content-overlay" @click="$store.dispatch('updateMenu')"></div>
      <section class="content-container">
-         <todo></todo>
+         <!-- <todo></todo> -->
+         <router-view></router-view>
      </section>
  </section> 
 </template>
@@ -15,6 +17,11 @@ export default {
   components: {
     menus,
     todo
+  },
+  computed: {
+    menuOpen () {
+      return this.$store.state.menuOpen
+    }
   }
 }
 </script>
